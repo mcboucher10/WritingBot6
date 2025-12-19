@@ -1,3 +1,4 @@
+
 int motor1Speed = 3;
 int motor1D1 = 4;
 int motor1D2 = 5;
@@ -5,42 +6,28 @@ int motor1D2 = 5;
 int motor2Speed = 9;
 int motor2D2 = 8;
 int motor2D1 = 7;
-int speed = 100;
+int speed1 = 105;
+int speed2 = 100;
 
-int scale = 10;
+int scale = 100;
 
 float pi = 3.14159;
 
-float turn_constant = pi / (speed * 550 * 2);
+/*
+Fx - Forward x units
+P0 - Penup
+P1 - Pendown
+Dx - Forward xsqrt(2) units
+Rx - Right 45x degrees
+Lx - Left 45x degrees
+*/
 
 String letters[27] = {
-    "0000051636454303434050", 
-    "0000063645443303334241300050", 
-    "0001051636453616050110304150",
-    "000006364541300050",
-    "0000064606033303004050",
-    "00000646060333030050",
-    "0001051636453616050110304143234350",
-    "0000060343464050",
-    "0006462620400050",
-    "00464130100150",
-    "0000060346034050",
-    "0006004050",
-    "00000623464050",
-    "000006404650",
-    "0010304145361605011050",
-    "00000636454433030050",
-    "001001051636454220102031224050",
-    "0000063645443303234050",
-    "0001103041423313040516364550",
-    "000646262050",
-    "0006011030414650",
-    "0006204650",
-    "00061024304650",
-    "00064023460050",
-    "00062346232050",
-    "000646004050",
-    "0050"};
+    "P1L2F3R2F4L2F2L1D1L1F2L1D1L1F2L2F4R2F3P0L2F1",
+    "L2F1", // test
+    "F4L4P1F3R1D1R1F4R1D1R1F3P0R2F6L2F1",
+    "L2P1F6R2F3R1D1R1F4R1D1R1F3P0R4F5",
+    "L2P1F6R2F4R"};
 
 void setup() {
     Serial.begin(9600);
@@ -51,11 +38,11 @@ void loop() {
 }
 
 void forward(float distance) {
-  analogWrite(motor1Speed, speed);
+  analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, LOW);
   digitalWrite(motor1D2, HIGH);
 
-  analogWrite(motor2Speed, speed);
+  analogWrite(motor2Speed, speed2);
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
 
@@ -65,70 +52,74 @@ void forward(float distance) {
 }
 
 void stop() {
-  analogWrite(motor1Speed, speed);
+  analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, LOW);
   digitalWrite(motor1D2, LOW);
 
-  analogWrite(motor2Speed, speed);
+  analogWrite(motor2Speed, speed2);
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, LOW);
 }
 
 void left(float theta) {
-  analogWrite(motor1Speed, speed);
+  analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, HIGH);
   digitalWrite(motor1D2, LOW);
 
-  analogWrite(motor2Speed, speed);
+  analogWrite(motor2Speed, speed2);
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
-
-  delay(550 / (pi / 2) * theta);
+  
+  if (theta == pi / 4) {
+    delay(250);
+  }
+  else if (theta == pi / 2) {
+    delay(425);
+  }
+  else if (theta == pi) {
+    delay (790);
+  }
 
   stop();
 }
 
 void right(float theta) {
-  analogWrite(motor1Speed, speed);
+  analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, LOW);
   digitalWrite(motor1D2, HIGH);
 
-  analogWrite(motor2Speed, speed);
+  analogWrite(motor2Speed, speed2);
   digitalWrite(motor2D1, HIGH);
   digitalWrite(motor2D2, LOW);
 
-  delay(550 / (pi / 2) * theta);
+  if (theta == pi / 4) {
+    delay(285);
+  }
+  else if (theta == pi / 2) {
+    delay(380);
+  }
+  else if (theta == pi) {
+    delay (855);
+  }
 
   stop();
-}
-
-float point_to_point(float rotation, int p0[], int p1[]) {
-    float dx = p1[0] - p0[0];
-    float dy = p1[1] - p0[1];
-
-    float dist = sqrt(dx * dx + dy * dy);
-    float angle = atan2(dy, dx);
-    float delta = angle - rotation;
-    if (delta < -1 * pi || delta > 0 && delta < pi) {
-      right(abs(delta));
-    } else {
-      left(abs(delta));
-    }
-
-    forward(dist);
-
-    return angle;
 }
 
 void write_letter(char letter) {
     String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
     String movement_string = letters[alphabet.indexOf(letter)];
-    float rot = point_to_point(0, movement_string[0], movement_string[1]);
-    delay(1000);
-    for (int i = 2; i < movement_string.length()-2; i+=2) {
-        rot = point_to_point(rot, movement_string[i], movement_string[i+1]);
-        delay(1000);
+    for (int i = 0; i < movement_string.length(); i += 2) {
+      String step = movement_string.substring(i, i+2);
+      int strength = step.charAt(1) - '0';
+      if (step.charAt(0) == 'L') {
+        left(pi / 4 * strength);
+      } else if (step.charAt(0) == 'R') {
+        right(pi / 4 * strength);
+      } else if (step.charAt(0) == 'F') {
+        forward(strength);
+      } else if (step.charAt(0) == 'D') {
+        forward(1.41 * strength);
+      } // add P0 and P1 for penup and pendown respectively
+      delay(1000);
     }
-
-    rot = point_to_point(rot, movement_string[movement_string.length()-2],movement_string[movement_string.length()-1]);
 }
