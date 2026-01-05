@@ -1,3 +1,6 @@
+#include <Servo.h>
+
+Servo myservo;
 
 int motor1Speed = 3;
 int motor1D1 = 4;
@@ -23,17 +26,38 @@ Lx - Left 45x degrees
 */
 
 String letters[27] = {
+    // A
     "P1L2F3R2F4L2F2L1D1L1F2L1D1L1F2L2F4R2F3P0L2F1",
-    "L2F1", // test
+
+    // B
+    "L2P1F6R2F3R1D1R1F1R1D1R1F3L4F3R1D1R1F1R1D1R1F3P0R4F5",
+
+    // C
     "F4L4P1F3R1D1R1F4R1D1R1F3P0R2F6L2F1",
+
+    // D
     "L2P1F6R2F3R1D1R1F4R1D1R1F3P0R4F5",
-    "L2P1F6R2F4R"};
+
+    // E
+    "L2P1F6R2F4R4F4L2F3L2F3R4F3L2F3L2F4P0F1",
+
+    // F
+    "L2P1F6R2F4R4F4L2F3L2F3P0R2F3L2F2",
+
+    // G
+    "F4L2F6L2P1F3L1D1L1F4L1D1L1F2L1D1L1F1L2F2P0L2F2L2F3"
+};
+
+int pos = 0;
 
 void setup() {
+    myservo.attach(10);
     Serial.begin(9600);
 }
 
 void loop() {
+  delay(3000);
+  penup();
   write_letter('A');
 }
 
@@ -105,6 +129,20 @@ void right(float theta) {
   stop();
 }
 
+void penup() {
+  for (pos = 0; pos <= 30; pos += 1) {
+    myservo.write(pos);
+    delay(15);
+  }
+}
+
+void pendown() {
+  for (pos = 30; pos >= 0; pos -= 1) {
+    myservo.write(pos);
+    delay(15);
+  }
+}
+
 void write_letter(char letter) {
     String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
     String movement_string = letters[alphabet.indexOf(letter)];
@@ -119,7 +157,11 @@ void write_letter(char letter) {
         forward(strength);
       } else if (step.charAt(0) == 'D') {
         forward(1.41 * strength);
-      } // add P0 and P1 for penup and pendown respectively
+      } else if (step.equals("P0")) {
+        penup();
+      } else if (step.equals("P1")) {
+        pendown();
+      }
       delay(1000);
     }
 }
