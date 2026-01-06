@@ -68,6 +68,14 @@ void loop() {
   write_letter('A');
 }
 
+/*
+    loop to take in word
+    void loop (){
+    }
+
+*/
+
+
 void forward(float distance) {
   analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, LOW);
@@ -172,3 +180,9 @@ void write_letter(char letter) {
       delay(1000);
     }
 }
+
+void write_word(String word){
+    for (int i = 0; i < word.length(); i++) {
+        char c = word.charAt(i);
+}    
+    
