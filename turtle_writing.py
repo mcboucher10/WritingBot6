@@ -33,11 +33,14 @@ letters = [
     #H
     "P1L2F6R4F3L2F3L2F3R4F6P0L2F1",
 
-    #I
+    # I
+    "P1L2F6P0R2F1",
 
-    #J
+    # J
+    "P0F3P1R2F5R2F2R2F2P0R4F1",
 
-    #K
+    # K
+    "P1L2F6P0R4F3P1L3D3P0R4D3P1L2D3P0F1",
 
     #L
     "P1L2F6R4F6L2F3P0F1",
