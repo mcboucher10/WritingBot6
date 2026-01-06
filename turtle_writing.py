@@ -3,6 +3,7 @@ import turtle, math
 screen = turtle.Screen()
 screen.title("Turtle Writing Bot")
 
+
 scale = 5
 
 t = turtle.Turtle()
@@ -67,7 +68,7 @@ letters = [
     "P0L2F1R2P1F3L2F3L2F3R2F3R2F3P0R2F6L2F1",
 
     # T
-    "P0L2F6R2P1F4P0R4F2P1L2F6P0L2F2",
+    "P0L2F6R2P1F4P0R4F2P1L2F6P0L2F3",
 
     # U
     "P1L2F6R4F6L2F3L2F6P0R4F6L2F1",
