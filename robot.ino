@@ -53,6 +53,13 @@ int pos = 0;
 void setup() {
     myservo.attach(10);
     Serial.begin(9600);
+    pinMode(motor1Speed, OUTPUT);
+    pinMode(motor1D1, OUTPUT);
+    pinMode(motor1D2, OUTPUT);
+    
+    pinMode(motor2Speed, OUTPUT);
+    pinMode(motor2D1, OUTPUT);
+    pinMode(motor2D2, OUTPUT);
 }
 
 void loop() {
