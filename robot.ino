@@ -197,5 +197,10 @@ void write_letter(char letter) {
 void write_word(String word){
     for (int i = 0; i < word.length(); i++) {
         char c = word.charAt(i);
+        write_letter(c);
+        penup();
+        forward(1);
+
+    }
 }    
     
