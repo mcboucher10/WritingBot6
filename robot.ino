@@ -69,8 +69,21 @@ void loop() {
 }
 
 /*
-    loop to take in word
+    final loop (takes in word)
+    
     void loop (){
+      if (Serial.available()) {
+        currentWord = Serial.readStringUntil('\n');
+        Serial.print("word that I will write");
+        Serial.println(currentWord);
+      }
+      delay(3000);
+      
+      if (currentWord.length() > 0) {
+        penup();
+        write_word(currentWord);
+      }
+    
     }
 
 */
