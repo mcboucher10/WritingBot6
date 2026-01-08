@@ -214,3 +214,15 @@ void write_letter(char letter) {
       delay(1000);
     }
 }
+
+
+void write_word(String word){
+    for (int i = 0; i < word.length(); i++) {
+        char c = word.charAt(i);
+        write_letter(c);
+       //change penup();
+        forward(1);
+
+    }
+}    
+    
