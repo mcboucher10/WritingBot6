@@ -9,8 +9,8 @@ int motor1D2 = 5;
 int motor2Speed = 9;
 int motor2D2 = 8;
 int motor2D1 = 7;
-int speed1 = 105;
-int speed2 = 100;
+int speed1 = 100;
+int speed2 = 120;
 
 int scale = 100;
 
@@ -109,11 +109,7 @@ String letters[27] = {
     
 };
 
-int pos = 0;
-
 void setup() {
-    myservo.attach(10);
-    Serial.begin(9600);
     pinMode(motor1Speed, OUTPUT);
     pinMode(motor1D1, OUTPUT);
     pinMode(motor1D2, OUTPUT);
@@ -121,45 +117,27 @@ void setup() {
     pinMode(motor2Speed, OUTPUT);
     pinMode(motor2D1, OUTPUT);
     pinMode(motor2D2, OUTPUT);
+    Serial.begin(9600);
 }
 
 void loop() {
-  delay(3000);
-  penup();
-  write_letter('A');
 }
 
-/*
-    final loop (takes in word)
-    
-    void loop (){
-      if (Serial.available()) {
-        currentWord = Serial.readStringUntil('\n');
-        Serial.print("word that I will write");
-        Serial.println(currentWord);
-      }
-      delay(3000);
-      
-      if (currentWord.length() > 0) {
-        penup();
-        write_word(currentWord);
-      }
-    
-    }
-
-*/
-
-
 void forward(float distance) {
-  analogWrite(motor1Speed, speed1);
+  analogWrite(motor1Speed, 100);
   digitalWrite(motor1D1, LOW);
   digitalWrite(motor1D2, HIGH);
 
-  analogWrite(motor2Speed, speed2);
+  analogWrite(motor2Speed, 105);
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
 
-  delay(distance * scale);
+  int distances[6] = {0,1.5,2.25,3,3.5,4.5};
+  if (int(distance) == distance) {
+    delay(distances[int(distance)] * scale);
+  } else {
+    delay(distance * scale);
+  }
 
   stop();
 }
@@ -184,13 +162,13 @@ void left(float theta) {
   digitalWrite(motor2D2, HIGH);
   
   if (theta == pi / 4) {
-    delay(250);
+    delay(255);
   }
   else if (theta == pi / 2) {
-    delay(425);
+    delay(445);
   }
   else if (theta == pi) {
-    delay (790);
+    delay(785);
   }
 
   stop();
@@ -206,30 +184,16 @@ void right(float theta) {
   digitalWrite(motor2D2, LOW);
 
   if (theta == pi / 4) {
-    delay(285);
+    delay(250);
   }
   else if (theta == pi / 2) {
-    delay(380);
+    delay(420);
   }
   else if (theta == pi) {
-    delay (855);
+    delay(855);
   }
 
   stop();
-}
-
-void penup() {
-  for (pos = 0; pos <= 30; pos += 1) {
-    myservo.write(pos);
-    delay(15);
-  }
-}
-
-void pendown() {
-  for (pos = 30; pos >= 0; pos -= 1) {
-    myservo.write(pos);
-    delay(15);
-  }
 }
 
 void write_letter(char letter) {
@@ -246,22 +210,7 @@ void write_letter(char letter) {
         forward(strength);
       } else if (step.charAt(0) == 'D') {
         forward(1.41 * strength);
-      } else if (step.equals("P0")) {
-        penup();
-      } else if (step.equals("P1")) {
-        pendown();
-      }
+      } // add P0 and P1 for penup and pendown respectively
       delay(1000);
     }
 }
-
-void write_word(String word){
-    for (int i = 0; i < word.length(); i++) {
-        char c = word.charAt(i);
-        write_letter(c);
-        penup();
-        forward(1);
-
-    }
-}    
-    
