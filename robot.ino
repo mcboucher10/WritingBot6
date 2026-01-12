@@ -6,7 +6,7 @@ int motor1Speed = 3;
 int motor1D1 = 4;
 int motor1D2 = 5;
 
-int motor2Speed = 9;
+int motor2Speed = 11;
 int motor2D2 = 8;
 int motor2D1 = 7;
 int speed1 = 100;
@@ -16,6 +16,8 @@ int scale = 100;
 
 float pi = 3.14159;
 
+int pos = 40;
+
 /*
 Fx - Forward x units
 P0 - Penup
@@ -23,93 +25,19 @@ P1 - Pendown
 Dx - Forward xsqrt(2) units
 Rx - Right 45x degrees
 Lx - Left 45x degrees
+Ux - Forward x units (penup)
 */
 
 String letters[27] = {
-    // A
-  	"P1L2F6R2F3R2F3R2F3R4F3R2F3P0L2F1",
-
-    //B
-    "L2P1F7R2F3R2F3R2F3R4F4R2F4R2F4P0R4F5",
-
-    //C
-    "F5L4P1F3R2F6R2F3P0R2F6L2F1",
-
-    //D
+    "L2F4R2F4L2F2L2F4L2F2L2U3R2F4L2U2",
+    "L2F1", // test
+    "F4L4P1F3R1D1R1F4R1D1R1F3P0R2F6L2F1",
     "L2P1F6R2F3R1D1R1F4R1D1R1F3P0R4F5",
-
-    //E
-    "L2P1F6R2F4R4F4L2F3L2F3R4F3L2F3L2F4P0F1",
-
-    //F
-    "L2P1F6R2F4R4F4L2F3L2F3P0R2F3L2F3",
-
-    //G
-    "F4L2F6L2P1F5L2F6L2F5L2F2L2F3P0R4F3R2F2L2F3",
-
-    //H
-    "P1L2F6R4F3L2F3L2F3R4F6P0L2F1",
-
-    // I
-    "P1F1L2F6R2F1R4F2R4F1R2F6L2F1P0F2",
-
-    //J
-    "P0L2F2P1R4F2L2F2L2F7P0R4F7L2F2",
-
-    // K
-    "P1L2F6P0R4F3P1L3D3P0R4D3P1L2D3P0L1F1",
-    
-    //L
-    "P1L2F6R4F6L2F3P0F1",
-    
-    //M
-    "P1L2F6R3D3L2D3R3F6P0L2F1",
-    
-    //N
-    "P1L2F6R3D6L3F6P0R4F6L2F1",
-    
-    //O
-    "P1L2F6R2F3R2F6R2F3P0R4F4",
-    
-    //P
-    "P1L2F6R2F3R2F3R2F3P0L2F3L2F4",
-    
-    // Q
-    "P1L2F6R2F3R2F6R2F3P0R4F3P1R1D1P0L2F2R1",
-
-    //R 
-    "P1L2F6R2F3R2F3R2F3P1L3D3P0L1F1",
-
-    //S 
-    "P1F3L2F3L2F3R2F3R2F3P0R2F6L2F1",
-
-    // T
-    "P0L2F6R2P1F4P0R4F2P1L2F6P0L2F3",
-
-    //U
-    "P1L2F6R4F6L2F3L2F6P0R4F6L2F1",
-
-    //V
-    "P0L2F6P1R3D5L2D5P0R3F5L2F1",
-
-    // W
-    "P0L2F6P1R4F6L3F3R2F3L3F6P0R4F6L2F2",
-
-    //X
-    "P0L2F6P1R3D6P0L3F6P1L3D6P0L3F7",
-
-    // Y
-    "P0L2F6P1R3D3L2D3P0R4D3L1P1F3P0L2F3",
-
-    // Z
-    "P0F2L2F6R2P1F4R3D6L3F4P0F3",
-
-    //SPACE 
-    "P0F2"
-    
-};
+    "L2P1F6R2F4R"};
 
 void setup() {
+    myservo.attach(10);
+    myservo.write(pos);
     pinMode(motor1Speed, OUTPUT);
     pinMode(motor1D1, OUTPUT);
     pinMode(motor1D2, OUTPUT);
@@ -117,10 +45,41 @@ void setup() {
     pinMode(motor2Speed, OUTPUT);
     pinMode(motor2D1, OUTPUT);
     pinMode(motor2D2, OUTPUT);
-    Serial.begin(9600);
 }
 
 void loop() {
+  /*left(pi / 2);
+  pendown();
+  forward(4);
+  penup();
+  right(pi / 2);
+  pendown();
+  forward(4);
+  penup();
+  left(pi / 2);
+  pendown();
+  forward(2);
+  penup();
+  left(pi / 2);
+  pendown();
+  forward(4);
+  penup();
+  left(pi / 2);
+  pendown();
+  forward(2);
+  penup();
+  left(pi / 2);
+  delay(500);
+  forward(4);
+  delay(500);
+  right(390);
+  pendown();
+  forward(4);
+  penup();
+  left(pi / 2);
+  forward(1);*/
+  write_letter('A');
+  delay(1000);
 }
 
 void forward(float distance) {
@@ -132,7 +91,7 @@ void forward(float distance) {
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
 
-  int distances[6] = {0,1.5,2.25,3,3.5,4.5};
+  int distances[7] = {0,1.5,2.25,3,3.5,4.5,5.25};
   if (int(distance) == distance) {
     delay(distances[int(distance)] * scale);
   } else {
@@ -153,6 +112,8 @@ void stop() {
 }
 
 void left(float theta) {
+  forward(1);
+  delay(500);
   analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, HIGH);
   digitalWrite(motor1D2, LOW);
@@ -165,16 +126,20 @@ void left(float theta) {
     delay(255);
   }
   else if (theta == pi / 2) {
-    delay(445);
+    delay(415);
   }
   else if (theta == pi) {
-    delay(785);
+    delay(785); 
+  } else {
+    delay(theta);
   }
 
   stop();
 }
 
 void right(float theta) {
+  forward(2);
+  delay(500);
   analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, LOW);
   digitalWrite(motor1D2, HIGH);
@@ -187,13 +152,32 @@ void right(float theta) {
     delay(250);
   }
   else if (theta == pi / 2) {
-    delay(420);
+    delay(410);
   }
   else if (theta == pi) {
-    delay(855);
+    delay(810);
+  } else {
+    delay(theta);
   }
 
   stop();
+  forward(1);
+}
+
+void penup() {
+  for (pos = pos; pos <= 40; pos += 1) {
+    myservo.write(pos);
+    delay(15);
+  }
+  delay(100);
+}
+
+void pendown() {
+  for (pos = pos; pos >= 10; pos -= 1) {
+    myservo.write(pos);
+    delay(15);
+  }
+  delay(100);
 }
 
 void write_letter(char letter) {
@@ -207,22 +191,16 @@ void write_letter(char letter) {
       } else if (step.charAt(0) == 'R') {
         right(pi / 4 * strength);
       } else if (step.charAt(0) == 'F') {
+        pendown();
         forward(strength);
+        penup();
       } else if (step.charAt(0) == 'D') {
+        pendown();
         forward(1.41 * strength);
-      } // add P0 and P1 for penup and pendown respectively
+        penup();
+      } else if (step.charAt(0) == 'U') {
+        forward(strength);
+      }
       delay(1000);
     }
 }
-
-
-void write_word(String word){
-    for (int i = 0; i < word.length(); i++) {
-        char c = word.charAt(i);
-        write_letter(c);
-       //change penup();
-        forward(1);
-
-    }
-}    
-    
