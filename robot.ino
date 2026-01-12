@@ -30,10 +30,8 @@ Ux - Forward x units (penup)
 
 String letters[27] = {
     "L2F4R2F4L2F2L2F4L2F2L2U3R2F4L2U2",
-    "L2F1", // test
-    "F4L4P1F3R1D1R1F4R1D1R1F3P0R2F6L2F1",
-    "L2P1F6R2F3R1D1R1F4R1D1R1F3P0R4F5",
-    "L2P1F6R2F4R"};
+    "L2F6R2F3R2F3R2F3B5L2F3R2F5L2L2U6",
+    "F3L2L2U3R2F4R2F3R2U4L2U2"};
 
 void setup() {
     myservo.attach(10);
@@ -78,7 +76,7 @@ void loop() {
   penup();
   left(pi / 2);
   forward(1);*/
-  write_letter('A');
+  write_letter('B');
   delay(1000);
 }
 
@@ -90,6 +88,25 @@ void forward(float distance) {
   analogWrite(motor2Speed, 105);
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
+
+  int distances[7] = {0,1.5,2.25,3,3.5,4.5,5.25};
+  if (int(distance) == distance) {
+    delay(distances[int(distance)] * scale);
+  } else {
+    delay(distance * scale);
+  }
+
+  stop();
+}
+
+void backward(float distance) {
+  analogWrite(motor1Speed, 100);
+  digitalWrite(motor1D1, HIGH);
+  digitalWrite(motor1D2, LOW);
+
+  analogWrite(motor2Speed, 105);
+  digitalWrite(motor2D1, HIGH);
+  digitalWrite(motor2D2, LOW);
 
   int distances[7] = {0,1.5,2.25,3,3.5,4.5,5.25};
   if (int(distance) == distance) {
@@ -126,7 +143,7 @@ void left(float theta) {
     delay(255);
   }
   else if (theta == pi / 2) {
-    delay(415);
+    delay(400);
   }
   else if (theta == pi) {
     delay(785); 
@@ -152,7 +169,7 @@ void right(float theta) {
     delay(250);
   }
   else if (theta == pi / 2) {
-    delay(410);
+    delay(385);
   }
   else if (theta == pi) {
     delay(810);
@@ -200,6 +217,10 @@ void write_letter(char letter) {
         penup();
       } else if (step.charAt(0) == 'U') {
         forward(strength);
+      } else if (step.charAt(0) == 'B') {
+        pendown();
+        backward(strength);
+        penup();
       }
       delay(1000);
     }
