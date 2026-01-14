@@ -26,12 +26,60 @@ Dx - Forward xsqrt(2) units
 Rx - Right 45x degrees
 Lx - Left 45x degrees
 Ux - Forward x units (penup)
+Ax - Backward x units (penup)
+Cx - Backward xsqrt(2) units (penup)
 */
 
 String letters[27] = {
-    "L2F4R2F4L2F2L2F4L2F2L2U3R2F4L2U2",
-    "L2F6R2F3R2F3R2F3B5L2F3R2F5L2L2U6",
-    "F3L2L2U3R2F4R2F3R2U4L2U2"};
+    // a
+    "L2F3R2F3R2F5A1L2B4U5",
+    // b
+    "L2F5A2R2F3R2F3R2F3L2L2U5",
+    // c
+    "U3L2U3L2F3L2F3L2F3U2",
+    // d
+    "L2F3R2F3L2F2B5L2F3R2R2U5",
+    // e
+    "U1L2U1R2F1L2F1L2F3L2F3L2F3U2",
+    // f
+    "L2F5R2F3A3R2F2L2F2A2R2U3L2U5",
+    // g
+    "F3A3L2F3R2F3R2F5R2F3R2U3R2U5",
+    // h
+    "R2F5A3R2F3R2F3L2U2",
+    // i
+    "L2F3U1F0A4R2U2",
+    // j
+    "L2F1A1R2F3L2F3U1F0A4R2U2",
+    // k
+    "L2F5A4R1D2C2R2D2L1U2",
+    // l
+    "L2F5A5R2U2",
+    // m
+    "L2F3R2F1R2F2A2L2F1R2F3L2U2",
+    // n
+    "L2F3R2F3R2F3L2U2",
+    // o
+    "F3L2F3L2F3L2F3L2U5",
+    // p
+    "F3L2F3L2F3L2F5A2L2U5",
+    // q
+    "L2F3R2F3R2F5A2L2B3U5",
+    // r
+    "L2F3R2F3R2U3L2U2",
+    // s
+    "F3L2F1L2F3R2F1R2F3R2U3L2U2",
+    // t
+    "L2U2R2F2A1L2F1B3R2U3",
+    // u
+    "F3L2F3L2U3L2F3L2U5",
+    // v
+    "L2U1R2R1D1L2D1R2U1L2U2",
+    // w
+    "L2F3A3R2F1L2F2A2R2F1L2F3A3R2U2",
+    // x
+    "L1D"
+    };
 
 void setup() {
     myservo.attach(10);
@@ -46,39 +94,20 @@ void setup() {
 }
 
 void loop() {
-  /*left(pi / 2);
   pendown();
-  forward(4);
+  forward(1);
   penup();
-  right(pi / 2);
-  pendown();
-  forward(4);
-  penup();
-  left(pi / 2);
-  pendown();
   forward(2);
-  penup();
-  left(pi / 2);
   pendown();
-  forward(4);
-  penup();
-  left(pi / 2);
+  forward(3);
   pendown();
-  forward(2);
+  forward(5);
   penup();
-  left(pi / 2);
-  delay(500);
-  forward(4);
-  delay(500);
-  right(390);
-  pendown();
-  forward(4);
-  penup();
-  left(pi / 2);
-  forward(1);*/
-  write_letter('B');
+  forward(6);
   delay(1000);
 }
+
+float distances[7] = {0,1.5,2.25,3,3.5,4.5,5.25};
 
 void forward(float distance) {
   analogWrite(motor1Speed, 100);
@@ -89,11 +118,28 @@ void forward(float distance) {
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
 
-  int distances[7] = {0,1.5,2.25,3,3.5,4.5,5.25};
   if (int(distance) == distance) {
     delay(distances[int(distance)] * scale);
   } else {
     delay(distance * scale);
+  }
+
+  stop();
+}
+
+void diagonal(float distance) {
+  analogWrite(motor1Speed, 100);
+  digitalWrite(motor1D1, LOW);
+  digitalWrite(motor1D2, HIGH);
+
+  analogWrite(motor2Speed, 105);
+  digitalWrite(motor2D1, LOW);
+  digitalWrite(motor2D2, HIGH);
+
+  if (int(distance) == distance) {
+    delay(distances[int(distance)] * 1.41 * scale);
+  } else {
+    delay(distance * 1.41 * scale);
   }
 
   stop();
@@ -108,9 +154,8 @@ void backward(float distance) {
   digitalWrite(motor2D1, HIGH);
   digitalWrite(motor2D2, LOW);
 
-  int distances[7] = {0,1.5,2.25,3,3.5,4.5,5.25};
   if (int(distance) == distance) {
-    delay(distances[int(distance)] * scale);
+    delay((distances[int(distance)]- 0.5) * scale);
   } else {
     delay(distance * scale);
   }
@@ -143,7 +188,7 @@ void left(float theta) {
     delay(255);
   }
   else if (theta == pi / 2) {
-    delay(400);
+    delay(425);
   }
   else if (theta == pi) {
     delay(785); 
@@ -198,8 +243,7 @@ void pendown() {
 }
 
 void write_letter(char letter) {
-    String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
-    String movement_string = letters[alphabet.indexOf(letter)];
+    String movement_string = letters[letter - 'a'];
     for (int i = 0; i < movement_string.length(); i += 2) {
       String step = movement_string.substring(i, i+2);
       int strength = step.charAt(1) - '0';
@@ -221,6 +265,10 @@ void write_letter(char letter) {
         pendown();
         backward(strength);
         penup();
+      } else if (step.charAt(0) == 'A') {
+        backward(strength);
+      } else if (step.charAt(0) == 'C') {
+        forward(1.41 * strength);
       }
       delay(1000);
     }
