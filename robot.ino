@@ -2,6 +2,7 @@
 
 Servo myservo;
 
+// wiring
 int motor1Speed = 3;
 int motor1D1 = 4;
 int motor1D2 = 5;
@@ -9,34 +10,47 @@ int motor1D2 = 5;
 int motor2Speed = 11;
 int motor2D2 = 8;
 int motor2D1 = 7;
+
+int servoPin = 10;
+
+// speed values that seemed to minimize the error within our turns
 int speed1 = 100;
 int speed2 = 120;
 
-int scale = 100;
-
-float pi = 3.14159;
-
+// initial servo orientation (penup)
 int pos = 40;
 
-float fdistances[7] = {0.75,1.5,2.4,3.2,4.25,4.5,5.5};
-float bdistances[7] = {0.75,1.1,2.25,3,3.75,4.25,5.25};
+// for an index i, to go forward/backward i units, move for x ms
+// note: index 0 is mapped to a small adjustment, not 0 units
+float fdistances[7] = {75,150,240,320,425,450,550};
+float bdistances[7] = {75,110,225,300,375,425,525};
+
+// for an index i, to turn 45 * i degrees, move for x ms
 int lefts[5] = {0,255,430,610,785};
 int rights[5] = {0,250,415,600,810};
+
+// for an index i, to turn 45 * i degrees, account for turn error by moving forward x units before the turn
+// note: -1 is used to indicate no adjustment, as forward(0) is a small correction
 int lpreoffsets[5] = {-1,1,1,-1,-1};
 int rpreoffsets[5] = {-1,1,1,-1,-1};
+
+// for an index i, to turn 45 * i degrees, account for turn error by moving forward x units after the turn
+// note: -1 is used to indicate no adjustment, as forward(0) is a small correction
 int lpostoffsets[5] = {-1,-1,0,-1,-1};
 int rpostoffsets[5] = {-1,-1,0,-1,-1};
 
 /*
-Fx - Forward x units
-P0 - Penup
-P1 - Pendown
-Dx - Forward xsqrt(2) units
-Rx - Right 45x degrees
-Lx - Left 45x degrees
-Ux - Forward x units (penup)
-Ax - Backward x units (penup)
-Cx - Backward xsqrt(2) units (penup)
+We describe each letter as a set of commands, each 2 characters long
+
+The first character is the TYPE of command:
+  F: Forward (pendown)
+  U: Forward (penup)
+  B: Backward (pendown)
+  A: Backward (penup)
+  L: Left (penup)
+  R: Right (penup)
+
+The second character is the STRENGTH of the command (e.g. 1 unit, 2 * 45 degrees)
 */
 
 String letters[27] = {
@@ -95,8 +109,10 @@ String letters[27] = {
     };
 
 void setup() {
-    myservo.attach(10);
-    myservo.write(pos);
+    myservo.attach(servoPin); // connect to servo
+    myservo.write(pos); // move servo to initial position
+
+    // setup to motor pins
     pinMode(motor1Speed, OUTPUT);
     pinMode(motor1D1, OUTPUT);
     pinMode(motor1D2, OUTPUT);
@@ -107,10 +123,12 @@ void setup() {
 }
 
 void loop() {
+  // use commands like write_letter() or write_word() in the loop
   write_word("mnopqrstuwy");
-  while(1);
+  while(1); // stop the program
 }
 
+// move the robot forward [strength] units
 void forward(int strength) {
   analogWrite(motor1Speed, 100);
   digitalWrite(motor1D1, LOW);
@@ -120,11 +138,12 @@ void forward(int strength) {
   digitalWrite(motor2D1, LOW);
   digitalWrite(motor2D2, HIGH);
 
-  delay(fdistances[strength] * scale);
+  delay(fdistances[strength]);
 
   stop();
 }
 
+// move the robot backward [strength] units
 void backward(int strength) {
   analogWrite(motor1Speed, 100);
   digitalWrite(motor1D1, HIGH);
@@ -134,11 +153,12 @@ void backward(int strength) {
   digitalWrite(motor2D1, HIGH);
   digitalWrite(motor2D2, LOW);
 
-  delay(bdistances[strength] * scale);
+  delay(bdistances[strength]);
 
   stop();
 }
 
+// stop the robot
 void stop() {
   analogWrite(motor1Speed, speed1);
   digitalWrite(motor1D1, LOW);
@@ -151,6 +171,7 @@ void stop() {
   delay(500);
 }
 
+// turn the robot left [strength * 45] degrees
 void left(int strength) {
   if (lpreoffsets[strength] == -2) {
     backward(0);
@@ -172,6 +193,7 @@ void left(int strength) {
   forward(lpostoffsets[strength]);
 }
 
+// turn the robot right [strength * 45] degrees
 void right(int strength) {
   if (strength != -1) {
     forward(rpreoffsets[strength]);
@@ -192,6 +214,7 @@ void right(int strength) {
   }
 }
 
+// raise the pen off the paper
 void penup() {
   for (pos = pos; pos <= 40; pos += 1) {
     myservo.write(pos);
@@ -200,6 +223,7 @@ void penup() {
   delay(100);
 }
 
+// lower the pen onto the paper
 void pendown() {
   for (pos = pos; pos >= 10; pos -= 1) {
     myservo.write(pos);
@@ -208,6 +232,7 @@ void pendown() {
   delay(100);
 }
 
+// given a letter, parse the command and execute the correct functions
 void write_letter(char letter) {
     String movement_string = letters[letter - 'a'];
     for (int i = 0; i < movement_string.length(); i += 2) {
@@ -233,6 +258,7 @@ void write_letter(char letter) {
     }
 }
 
+// given a word, write it letter by letter
 void write_word(String word) {
   for (int i = 0; i < strlen(word); i++) {
     write_letter(word.charAt(i));
