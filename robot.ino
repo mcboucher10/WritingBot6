@@ -45,9 +45,9 @@ float bdistances[7] = {75,110,225,300,375,425,525};
 // i = 4,  180 degrees
 //each value is the number of milliseconds the motors should run to turn that angle
 //left turn times (miliseconds)
-int lefts[5] = {0,255,430,610,785};
+int lefts[5] = {0,255,440,610,785};
 //right turn times (miliseconds)
-int rights[5] = {0,250,415,600,810};
+int rights[5] = {0,250,430,600,810};
 
 // index i corresponds to a turn of 45 * i degrees.
 // pre-offsets move the robot forward slightly before a 45 * i degree turn.
@@ -151,7 +151,7 @@ void setup() {
 
 void loop() {
   // use commands like write_letter() or write_word() in the loop
-  write_word("mnopqrstuwy");
+  write_word("qualify");
   while(1); // stop the program
 }
 
@@ -330,7 +330,7 @@ void write_letter(char letter) {
 // given a word, write it letter by letter
 void write_word(String word) {
   // loop through each character in the word
-  for (int i = 0; i < strlen(word); i++) {
+  for (int i = 0; i < word.length(); i++) {
     write_letter(word.charAt(i));
   }
 }
